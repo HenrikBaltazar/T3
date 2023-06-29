@@ -64,9 +64,56 @@ void teste(vector<int> dados, int qtd){
         cout << " OK!"<<endl;
 }
 
+void criaArquivo(string nome){
+    ofstream arquivo(nome);
+    if(!arquivo.is_open()){
+        cout << "erro ao criar os arquivos" <<endl;
+        return;
+    }
+    cout << "arquivo " << nome << " criado com sucesso" << endl;
+    arquivo.close();
+}
+
+bool existeArquivo(const string& nome){
+    ifstream arquivo(nome);
+    return arquivo.good();
+}
+
+void escreveLinhaArquivo(const string nomeArquivo, const string linha){
+    ofstream arquivo(nomeArquivo, std::ios::app); // Abre o arquivo no modo de escrita (append)
+
+    if (arquivo.is_open()) {
+        arquivo << linha << endl; // Escreve a linha no arquivo
+        cout << nomeArquivo << " recebe linha " << linha <<endl;
+        arquivo.close(); // Fecha o arquivo
+    } else {
+        cout << "Erro ao abrir o arquivo." << endl;
+    }
+}
+
+void saida(int tipo, int qtd, float shell_trocas, float merge_trocas, float quick_trocas, float heap_trocas,float shell_compare, float merge_compare, float quick_compare, float heap_compare){
+    string arquivo="", linha = to_string(qtd) + "," + to_string(shell_trocas) + ","+ to_string(merge_trocas) + "," + to_string(quick_trocas) + "," + to_string(heap_trocas) + "," + to_string(shell_compare) + "," + to_string(merge_compare) + "," + to_string(quick_compare) + "," + to_string(heap_compare); 
+
+    if (tipo == 1){
+        arquivo="crescente.csv";
+    }else if(tipo == 2){
+        arquivo = "decrescente.csv";
+    }else if(tipo == 3){
+        arquivo = "aleatorio.csv";
+    }
+
+    if(!existeArquivo(arquivo)){
+        criaArquivo(arquivo);
+        escreveLinhaArquivo(arquivo, "qtdDados,shell_trocas,merge_trocas,quick_trocas,heap_trocas,shell_compare,merge_compare,quick_compare,heap_compare"); //cabecalho
+    }
+
+    escreveLinhaArquivo(arquivo,linha);
+
+}
+
 int main() {
     string nomeArquivo="";
-    int quantidadeDados=0;
+    int quantidadeDados=0, tipoOrganizacao=0;
     do{
     cout << "Digite o nome do arquivo de dados: ";
     cin >> nomeArquivo;
@@ -74,6 +121,11 @@ int main() {
     cout << "Digite a quantidade de dados a serem ordenados (1 a 10000): ";
     cin >> quantidadeDados;
 
+    cout << "Selecione a organizacao" << endl;
+    cout << "1 - Crescente" << endl;
+    cout << "2 - Decrescente" << endl;
+    cout << "3 - Aleatorio" << endl;
+    cin >> tipoOrganizacao;
 
     if(nomeArquivo == "")
         cout << endl << "[ERRO] Nome do arquivo nao pode ser nulo" << endl;
@@ -81,8 +133,10 @@ int main() {
         cout << endl << "[ERRO] Quantidade de dados nao pode ser menor do que 1" << endl;
     else if (quantidadeDados > 10000)
         cout << endl << "[ERRO] Quantidade de dados nao pode ser maior que 10000" << endl;
+    if(tipoOrganizacao<1 || tipoOrganizacao>3 )
+        cout << endl << "[ERRO] Tipo de Organizacao de dados deve estar entre 1 e 3" << endl;
 
-    }while (nomeArquivo == "" || quantidadeDados == 0);
+    }while (nomeArquivo == "" || quantidadeDados <1 || quantidadeDados > 10000 || tipoOrganizacao <1 || tipoOrganizacao > 3);
 
     cout<<endl;
     
@@ -139,6 +193,8 @@ int main() {
     cout<<"MERGE SORT:"<<endl<<"trocas: "<<relativo(merge_trocas,maiorTrocas)<<endl<<"comparacoes: "<<relativo(merge_comparacoes,maiorComparacao)<<endl;
     cout<<"QUICK SORT:"<<endl<<"trocas: "<<relativo(quick_trocas,maiorTrocas)<<endl<<"comparacoes: "<<relativo(quick_comparacoes,maiorComparacao)<<endl;
     cout<<"HEAP SORT:"<<endl<<"trocas: "<<relativo(heap_trocas,maiorTrocas)<<endl<<"comparacoes: "<<relativo(heap_comparacoes,maiorComparacao)<<endl;
+
+    saida(tipoOrganizacao,quantidadeDados,relativo(shell_trocas, maiorTrocas),relativo(merge_trocas,maiorTrocas),relativo(quick_trocas,maiorTrocas),relativo(heap_trocas,maiorTrocas),relativo(shell_comparacoes, maiorComparacao),relativo(merge_comparacoes,maiorComparacao),relativo(quick_comparacoes,maiorComparacao),relativo(heap_comparacoes,maiorComparacao));
 
     return 0;
 }
