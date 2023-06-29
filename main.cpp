@@ -1,19 +1,22 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <algorithm>
+#include <random>
 #include "sorts.h"
 
 using namespace std;
 
 
-vector<int> lerDadosArquivo(const string& nomeArquivo) {
+vector<int> lerDadosArquivo(const string& nomeArquivo, int qunt) {
     vector<int> dados;
     ifstream arquivo(nomeArquivo);
-
+    int aux = 0;
     if (arquivo.is_open()) {
         int numero;
-        while (arquivo >> numero) {
+        while (arquivo >> numero and aux < qunt) {
             dados.push_back(numero);
+            aux++;
         }
         arquivo.close();
     }
@@ -140,7 +143,13 @@ int main() {
 
     cout<<endl;
     
-    vector<int> dados = lerDadosArquivo(nomeArquivo);
+    vector<int> dados = lerDadosArquivo(nomeArquivo,quantidadeDados);
+    if(tipoOrganizacao==2){
+        reverse(dados.begin(),dados.end());
+    }
+    if(tipoOrganizacao==3){
+        random_shuffle(dados.begin(),dados.end());
+    }
     vector<int> shell_dados = dados, quick_dados = dados, merge_dados = dados, heap_dados = dados;
     
     int quick_trocas=0,quick_comparacoes=0,merge_trocas=0,merge_comparacoes=0,shell_trocas=0,shell_comparacoes=0,heap_trocas=0,heap_comparacoes=0;
